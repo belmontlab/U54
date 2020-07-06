@@ -94,7 +94,7 @@ rep2 = bw_to_df(bw_path$rep2)
 damid = bw_to_df(bw_path$damID)
 ```
 
-```{r}
+```{r, fig.height=5,fig.width=5}
 d <- highlight_key(rep1)
 
 base <- plot_ly(d, size=I(0.3), showlegend = FALSE)
