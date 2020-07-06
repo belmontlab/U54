@@ -1,0 +1,12 @@
+name: "u54_plot"
+output_dir: "docs"
+navbar:
+  title: "U54-plots"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "HCT116"
+      href: hct116_plots.html
+output:
+  html_document:
+    theme: cosmo
