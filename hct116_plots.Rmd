@@ -15,8 +15,7 @@ library(plotly)
 theme = theme_bw(base_size = 18)
 ```
 
-
-```{r import_rebin, include=FALSE}
+```{r, echo=FALSE}
 # import and rebin in one go
 import_rebin = function(path,bin,only_mcol=TRUE){
   bw = as.gr(path,genome = "hg38")
@@ -26,44 +25,24 @@ import_rebin = function(path,bin,only_mcol=TRUE){
   else bw
 }
 ```
-```{r datat_prep, include=FALSE}
+```{r, echo=FALSE}
 # data prep 
 # file pathes that i'm using here
 bw_path=list(
-  rep1=c(k562_son="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/k562/TSA_Seq/25kb/K562_SON_TSA_25kb_hg38_rep1_201911condE.bw",
-       k562_lmnb="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/k562/TSA_Seq/25kb/K562_LMNB_TSA_25kb_hg38_rep1_201508condA.bw",
+  rep1=c(
        hct_son="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_SON_TSA_25kb_hg38_rep1_201711condE.bw",
        hct_lmnb="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_LMNB1_TSA_25kb_hg38_rep1_201806condA.bw",
        hct_mki67 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_MKI67IP_TSA_25kb_hg38_rep1_201907condC.bw",
        hct_pol1 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_PolR1E_TSA_25kb_hg38_rep1_201903condC.bw",
        hct_ddx18 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_DDX18_TSA_25kb_hg38_rep1_201903condC.bw",
-       
-       hff_son="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hff/TSA_Seq/25kb/HFFc6_SON_TSA_25kb_hg38_rep1_201806condE.bw",
-       hff_lmnb="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hff/TSA_Seq/25kb/HFFc6_LMNB1_TSA_25kb_hg38_rep1_201810condAI.bw",
-       
-       h1_son = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/h1esc/TSA_Seq/25kb/H1_SON_TSA_25kb_hg38_rep1_201807condE.bw",
-       h1_lmnb = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/h1esc/TSA_Seq/25kb/H1_LMNB1_TSA_25kb_hg38_rep1_201810condAI.bw"),
-  
-  rep2=c(k562_son="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/k562/TSA_Seq/25kb/K562_SON_TSA_25kb_hg38_rep2_201610condE.bw",
-       k562_lmnb="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/k562/TSA_Seq/25kb/K562_LMNB_TSA_25kb_hg38_rep1_201712condA.bw",
-       hff_son="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hff/TSA_Seq/25kb/HFFc6_SON_TSA_25kb_hg38_rep2_201711condE.bw",
-       hct_son="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_SON_TSA_25kb_hg38_rep2_201803condE.bw",
-       hct_lmnb="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_LMNB1_TSA_25kb_hg38_rep2_201806condA.bw",
-       hff_lmnb="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hff/TSA_Seq/25kb/HFFc6_LMNB1_TSA_25kb_hg38_rep2_201810condAI.bw",
-       h1_son = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/h1esc/TSA_Seq/25kb/H1_SON_TSA_25kb_hg38_rep2_201807condE.bw",
-       h1_lmnb = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/h1esc/TSA_Seq/25kb/H1_LMNB1_TSA_25kb_hg38_rep2_201903condAI.bw"),
-  
-  damID=c(
-    k562_dam_lmnb = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/k562/DamID/25kb/K562_LMNB1_DAMID_25kb_hg38_combined.bw",
-    k562_dam_ap3 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/k562/DamID/25kb/K562_4xAP3_DAMID_25kb_hg38_combined.bw",
     hct_dam_ap3 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/DamID/25kb/HCT116_4xAP3_DAMID_25kb_hg38_combined.bw", 
     hct_dam_lmnb = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/DamID/25kb/HCT116_LMNB1_DAMID_25kb_hg38_combined.bw",
     hct_dam_ap3 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/DamID/25kb/HCT116_4xAP3_DAMID_25kb_hg38_combined.bw",
-    hff_dam_lmnb = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hff/DamID/25kb/HFF_LMNB1_DAMID_25kb_hg38_combined.bw",
-    hff_dam_ap3 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hff/DamID/25kb/HFF_4xAP3_DAMID_25kb_hg38_combined.bw",
-    h1_dam_lmnb = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/h1esc/DamID/25kb/H1_LMNB1_DAMID_25kb_hg38_combined.bw",
-    h1_dam_ap3 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/h1esc/DamID/25kb/H1_4xAP3_DAMID_25kb_hg38_combined.bw")
-)
+    h3k4me1="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K4me1_ENCODE.Broad_ENCSR161MXP.bw",
+    h3k4me3="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K4me3_ENCODE.Broad_ENCSR333OPW.bw",
+    h3k9me3="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K9me3_ENCODE.Broad_ENCSR179BUC.bw",
+    h3k27me3="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K27me3_ENCODE.Broad_ENCSR810BDB.bw"
+    ))
 
 # create a df with all dt
 
@@ -86,15 +65,18 @@ bw_to_df<-function(bw_path){
 }
 
 ```
-
-```{r import_data, include=FALSE}
+```{r import_data,echo=FALSE, include=FALSE}
 #make dfs for each rep
-rep1 = bw_to_df(bw_path$rep1)
-rep2 = bw_to_df(bw_path$rep2)
-damid = bw_to_df(bw_path$damID)
+# rep1 = bw_to_df(bw_path$rep1)
+# rep2 = bw_to_df(bw_path$rep2)
+# damid = bw_to_df(bw_path$damID)
+# save(rep1,file = "stuff.RData")
+load("stuff.RData")
+rep1
+
 ```
 
-```{r, fig.height=5,fig.width=5}
+```{r, fig.height=6,fig.width=12, echo=FALSE,warning=FALSE}
 d <- highlight_key(rep1)
 
 base <- plot_ly(d, size=I(0.3), showlegend = FALSE)
@@ -105,12 +87,19 @@ subplot(
   add_markers(base, x = ~hct_mki67, y = ~hct_pol1),
   add_markers(base, x= ~hct_son, y=~hct_mki67),
   add_markers(base, x= ~hct_mki67, y=~hct_lmnb),
-  titleX = TRUE,titleY = TRUE,nrows = 2
-  
-)%>%
+
+  titleX = TRUE,titleY = TRUE,nrows = 2,margin = 0.07
+
+)%>% subplot(
+  subplot(add_boxplot(base, x="h3k4me1", y = ~h3k4me1, type = "violin"),
+    add_boxplot(base, x="h3k4me3",y = ~h3k4me1, type = "violin"),
+    add_boxplot(base, x="h3k9me3",y = ~h3k9me3, type = "violin"),
+    add_boxplot(base, x="h3k27me3",y = ~h3k27me3, type = "violin"),
+    margin = 0.02),titleX = TRUE,titleY = TRUE)%>%
   # Selections are actually additional traces, and, by default, 
   # plotly.js will try to dodge bars placed under the same category
   layout(barmode = "overlay", dragmode = "lasso") %>%
-  highlight("plotly_selected")
+  highlight(on = "plotly_selected",off = 'plotly_deselect')
 ```
+
 
