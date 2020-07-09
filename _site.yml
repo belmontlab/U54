@@ -5,8 +5,13 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+    - text: "hct/k562 axes"
+      href: hct_k562_son_lmnb_axes.html
+    - text: "4 cell-lines axes with replicates"
+      href: 4_cell_line_lmnb-son-axis.html
     - text: "HCT116"
       href: hct116_plots.html
+
 output:
   html_document:
     theme: cosmo

@@ -4,80 +4,22 @@ title: "hct116"
 
 ```{r setup, include=FALSE}
 library(TSAtools)
-library(ggplot2)
-library(ggpubr)
-library(gridExtra)
-library(grid)
-library(dplyr)
-library(karyoploteR)
 library(plotly)
-
-theme = theme_bw(base_size = 18)
 ```
 
-```{r, echo=FALSE}
-# import and rebin in one go
-import_rebin = function(path,bin,only_mcol=TRUE){
-  bw = as.gr(path,genome = "hg38")
-  bw = BW_bnr(bw,bin)
-  if (only_mcol)
-    mcols(bw)
-  else bw
-}
-```
-```{r, echo=FALSE}
-# data prep 
-# file pathes that i'm using here
-bw_path=list(
-  rep1=c(
-       hct_son="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_SON_TSA_25kb_hg38_rep1_201711condE.bw",
-       hct_lmnb="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_LMNB1_TSA_25kb_hg38_rep1_201806condA.bw",
-       hct_mki67 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_MKI67IP_TSA_25kb_hg38_rep1_201907condC.bw",
-       hct_pol1 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_PolR1E_TSA_25kb_hg38_rep1_201903condC.bw",
-       hct_ddx18 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/TSA_Seq/25kb/HCT116_DDX18_TSA_25kb_hg38_rep1_201903condC.bw",
-    hct_dam_ap3 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/DamID/25kb/HCT116_4xAP3_DAMID_25kb_hg38_combined.bw", 
-    hct_dam_lmnb = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/DamID/25kb/HCT116_LMNB1_DAMID_25kb_hg38_combined.bw",
-    hct_dam_ap3 = "~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/DamID/25kb/HCT116_4xAP3_DAMID_25kb_hg38_combined.bw",
-    h3k4me1="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K4me1_ENCODE.Broad_ENCSR161MXP.bw",
-    h3k4me3="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K4me3_ENCODE.Broad_ENCSR333OPW.bw",
-    h3k9me3="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K9me3_ENCODE.Broad_ENCSR179BUC.bw",
-    h3k27me3="~/box_sync/Andy_lab/Projects/U54_student_meeting/summary_paper/reference_data/hct116/chip_seq_yang/HCT116_H3K27me3_ENCODE.Broad_ENCSR810BDB.bw"
-    ))
 
-# create a df with all dt
-
-bw_to_df<-function(bw_path){
-  all_dt = as.data.frame(import_rebin(bw_path[1],2e5,only_mcol = FALSE))[,c("seqnames","start","end")]
-  
-  for (idx in 1:length(bw_path)){
-    bw = import_rebin(bw_path[idx],2e5,only_mcol = FALSE) # import and rebin
-    
-    # export the rebinned
-    new_file_name = paste(tools::file_path_sans_ext(basename(bw_path[idx])),"_200kb",".bw",sep='')
-    # export(bw,new_file_name)
-    
-    df = as.data.frame(mcols(bw))
-    names(df) = names(bw_path)[idx]
-    all_dt = cbind(all_dt,df)
-  }
-  all_dt = all_dt[apply(all_dt[,4:11],1,prod) != 0,] # remove the rows that have at least a zero
-  return(all_dt)
-}
-
-```
 ```{r import_data,echo=FALSE, include=FALSE}
 #make dfs for each rep
-# rep1 = bw_to_df(bw_path$rep1)
+load("stuff.RData")
+df = cbind(rep1,hct_hist[,4:7])
 # rep2 = bw_to_df(bw_path$rep2)
 # damid = bw_to_df(bw_path$damID)
-# save(rep1,file = "stuff.RData")
-load("stuff.RData")
-rep1
+
 
 ```
 
 ```{r, fig.height=6,fig.width=12, echo=FALSE,warning=FALSE}
-d <- highlight_key(rep1)
+d <- highlight_key(df)
 
 base <- plot_ly(d, size=I(0.3), showlegend = FALSE)
 # color = I("black"),

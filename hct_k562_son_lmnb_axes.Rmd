@@ -1,0 +1,43 @@
+---
+title: "axes in hct/k562"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message = FALSE,warning = FALSE)
+library(plotly)
+```
+
+```{r}
+load("stuff.RData")
+names(rep1) = gsub(pattern = "son","son_r1",names(rep1))
+names(rep1) = gsub(pattern = "lmnb","lmnb_r1",names(rep1))
+
+names(rep2) = gsub(pattern = "son","son_r2",names(rep2))
+names(rep2) = gsub(pattern = "lmnb","lmnb_r2",names(rep2))
+
+df = cbind(rep1,rep2)
+keep = (grepl("son",names(df))|grepl("lmnb",names(df)))& (grepl("k562",names(df))|grepl("hct",names(df)))
+df = df[,keep]
+
+```
+
+```{r fig.height= 6,fig.width=6}
+d <- highlight_key(df)
+lay = list(range = c(-2, 1.5))
+base <- plot_ly(d, size=I(0.3), showlegend = FALSE)
+# color = I("black"),
+subplot(
+  add_markers(base, x = ~k562_son_r1, y = ~k562_lmnb_r1),
+  add_markers(base, x= ~hct_son_r1, y=~hct_lmnb_r1),
+  add_markers(base, x = ~k562_son_r2, y = ~k562_lmnb_r2)%>%layout(yaxis=lay),
+  add_markers(base, x= ~hct_son_r2, y=~hct_lmnb_r2),
+  # add_markers(base, x= ~h1_son, y=~h1_lmnb),
+  # add_markers(base, x= ~hff_son, y=~hff_lmnb),
+  margin = c(0.04,0.04,0.07,0.07),titleX = TRUE,titleY = TRUE,nrows = 2 
+)%>%
+  # Selections are actually additional traces, and, by default, 
+  # plotly.js will try to dodge bars placed under the same category
+  layout(barmode = "overlay", dragmode = "lasso") %>%
+  highlight("plotly_selected")
+```
+
