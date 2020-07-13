@@ -1,0 +1,102 @@
+---
+title: "k562_hct_vector_plot"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message = FALSE,warning = FALSE)
+library(plotly)
+```
+
+```{r data_prep}
+#load data
+load("stuff.RData")
+
+names(rep1) = gsub(pattern = "son","son_r1",names(rep1))
+names(rep1) = gsub(pattern = "lmnb","lmnb_r1",names(rep1))
+
+names(rep2) = gsub(pattern = "son","son_r2",names(rep2))
+names(rep2) = gsub(pattern = "lmnb","lmnb_r2",names(rep2))
+
+filter_names <-function(names,patterns){
+  keep = rep(FALSE,length(names))
+  for (i in patterns){
+    keep = keep | grepl(i,names)
+  }
+  return (keep)
+}
+reps = cbind(rep1,rep2)
+c_keep = filter_names(names(reps),c(c("hct_son","hct_lmnb","k562_son","k562_lmnb"))) # Finding columns
+reps= reps[,c_keep]
+r_keep = apply(X = reps,MARGIN = 1,FUN = prod)!=0 # Finding rows that have zeroes in them
+reps= reps[r_keep,] # Keeping rows needed.
+```
+
+## Percentile Normalization
+
+This is how percentile normalization is done:
+```{r percentile_norm, echo=TRUE}
+perc.rank = function(x) {trunc(rank(as.numeric(x)))/length(x)}
+reps_norm = as.data.frame( apply(reps,2, FUN = perc.rank))
+
+```
+
+## Difference calculation
+
+For the difference plots
+Fore each replicate I calculated "K562_SON - HCT116_SON" and "K562_LMNB1 - HCT116_LMNB1" and plotted as below.
+Negative numbers in difference plots indicate closer to the axis compartment.
+```{r diff_calculation}
+k562_norm = reps_norm[,grepl("k562",names(reps_norm))]
+hct_norm = reps_norm[,grepl("hct",names(reps_norm))]
+
+k562_hct_diff = k562_norm - hct_norm
+names(k562_hct_diff) =  c("son_diff_r1","lmnb_diff_r1","son_diff_r2","lmnb_diff_r2")
+k562_hct_diff = data.frame(k562_hct_diff,
+                           son_diff_avg=(k562_hct_diff$son_diff_r1+k562_hct_diff$son_diff_r2)/2,
+                           lmnb_diff_avg=(k562_hct_diff$lmnb_diff_r1+k562_hct_diff$lmnb_diff_r2)/2
+                           )
+```
+
+```{r sanity_check, include=FALSE}
+# checking the validity of subtracting DF.
+table((k562_norm$k562_son_r1 - hct_norm$hct_son_r1) ==  k562_hct_diff$son_diff_r1)
+table((k562_norm$k562_lmnb_r1 - hct_norm$hct_lmnb_r1) ==  k562_hct_diff$lmnb_diff_r1)
+table((k562_norm$k562_son_r2 - hct_norm$hct_son_r2) ==  k562_hct_diff$son_diff_r2)
+table((k562_norm$k562_lmnb_r2 - hct_norm$hct_lmnb_r2) ==  k562_hct_diff$lmnb_diff_r2)
+```
+
+```{r df_making, include=FALSE}
+df = cbind(k562_norm,hct_norm,k562_hct_diff)
+names(df)
+```
+
+```{r plot, fig.width=12,fig.height=9}
+d <- highlight_key(df)
+base <- plot_ly(d, size=I(0.3), showlegend = FALSE)
+# color = I("black"),
+subplot(
+  add_markers(base, x = ~k562_son_r1, y = ~k562_son_r2),
+  add_markers(base, x = ~hct_son_r1, y = ~hct_son_r2),
+  
+  add_markers(base, x = ~k562_lmnb_r1, y = ~k562_lmnb_r2),
+  add_markers(base, x = ~hct_lmnb_r1, y = ~hct_lmnb_r2),
+  
+  add_markers(base, x = ~k562_lmnb_r1, y = ~k562_son_r1),
+  add_markers(base, x = ~k562_lmnb_r2, y = ~k562_son_r2),
+  
+  add_markers(base, x = ~hct_lmnb_r1, y = ~hct_son_r1),
+  add_markers(base, x = ~hct_lmnb_r2, y = ~hct_son_r2),
+  
+  add_markers(base, x = ~son_diff_r1, y = ~lmnb_diff_r1),
+  add_markers(base, x= ~son_diff_r2, y=~lmnb_diff_r2),
+  add_markers(base, x= ~son_diff_avg, y=~lmnb_diff_avg),
+  
+  margin = c(0.04,0.04,0,0.07),
+  titleX = TRUE,titleY = TRUE,nrows = 3
+)%>%
+  # Selections are actually additional traces, and, by default, 
+  # plotly.js will try to dodge bars placed under the same category
+  layout(barmode = "overlay", dragmode = "lasso") %>% 
+  highlight("plotly_selected")
+```
+
