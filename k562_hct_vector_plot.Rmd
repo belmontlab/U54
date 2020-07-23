@@ -34,11 +34,24 @@ reps= reps[r_keep,] # Keeping rows needed.
 ## Percentile Normalization
 
 This is how percentile normalization is done:
+
 ```{r percentile_norm, echo=TRUE}
-perc.rank = function(x) {trunc(rank(as.numeric(x)))/length(x)}
-reps_norm = as.data.frame( apply(reps,2, FUN = perc.rank))
+# perc.rank = function(x) {trunc(rank(as.numeric(x)))/length(x)}
+# reps_norm = as.data.frame( apply(reps,2, FUN = perc.rank))
 
 ```
+
+This is how percentile normalization is done. All the data will be in the range of [0-1].
+
+```{r min_max_norm, exho=TRUE}
+# min.max.norm = function(x) {(x-min(x))/(max(x)-min(x))}
+# reps_norm = as.data.frame( apply(reps,2, FUN = min.max.norm))
+```
+
+```{r}
+reps_norm = as.data.frame( apply(reps,2, FUN = scale))
+```
+
 
 ## Difference calculation
 
@@ -75,21 +88,17 @@ d <- highlight_key(df)
 base <- plot_ly(d, size=I(0.3), showlegend = FALSE)
 # color = I("black"),
 subplot(
-  add_markers(base, x = ~k562_son_r1, y = ~k562_son_r2),
-  add_markers(base, x = ~hct_son_r1, y = ~hct_son_r2),
-  
-  add_markers(base, x = ~k562_lmnb_r1, y = ~k562_lmnb_r2),
-  add_markers(base, x = ~hct_lmnb_r1, y = ~hct_lmnb_r2),
-  
-  add_markers(base, x = ~k562_lmnb_r1, y = ~k562_son_r1),
-  add_markers(base, x = ~k562_lmnb_r2, y = ~k562_son_r2),
-  
-  add_markers(base, x = ~hct_lmnb_r1, y = ~hct_son_r1),
-  add_markers(base, x = ~hct_lmnb_r2, y = ~hct_son_r2),
-  
-  add_markers(base, x = ~son_diff_r1, y = ~lmnb_diff_r1),
-  add_markers(base, x= ~son_diff_r2, y=~lmnb_diff_r2),
-  add_markers(base, x= ~son_diff_avg, y=~lmnb_diff_avg),
+  add_markers(base, y = ~k562_son_r1,  x = ~k562_son_r2),
+  add_markers(base, y = ~hct_son_r1,   x = ~hct_son_r2),
+  add_markers(base, y = ~k562_lmnb_r1, x = ~k562_lmnb_r2),
+  add_markers(base, y = ~hct_lmnb_r1,  x = ~hct_lmnb_r2),
+  add_markers(base, y = ~k562_lmnb_r1, x = ~k562_son_r1),
+  add_markers(base, y = ~k562_lmnb_r2, x = ~k562_son_r2),
+  add_markers(base, y = ~hct_lmnb_r1,  x = ~hct_son_r1),
+  add_markers(base, y = ~hct_lmnb_r2,  x = ~hct_son_r2),
+  add_markers(base, y = ~son_diff_r1,  x = ~lmnb_diff_r1),
+  add_markers(base, y = ~son_diff_r2,  x =~lmnb_diff_r2),
+  add_markers(base, y = ~son_diff_avg, x =~lmnb_diff_avg),
   
   margin = c(0.04,0.04,0,0.07),
   titleX = TRUE,titleY = TRUE,nrows = 3

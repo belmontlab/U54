@@ -19,20 +19,18 @@ df = cbind(rep1,hct_hist[,4:7])
 ```
 
 ```{r, fig.height=6,fig.width=12, echo=FALSE,warning=FALSE}
-d <- highlight_key(df)
+d <- highlight_key(df) # The data.frame containing the data in columns
 
-base <- plot_ly(d, size=I(0.3), showlegend = FALSE)
-# color = I("black"),
-subplot(
-  # add_histogram(base, x = ~class),
-  add_markers(base, x= ~hct_son, y=~hct_lmnb),
+base <- plot_ly(d, size=I(0.3), showlegend = FALSE) 
+subplot( #create scatter plots like this
+  add_markers(base, x= ~hct_son, y=~hct_lmnb), # the columns to be plotted title
   add_markers(base, x = ~hct_mki67, y = ~hct_pol1),
   add_markers(base, x= ~hct_son, y=~hct_mki67),
   add_markers(base, x= ~hct_mki67, y=~hct_lmnb),
 
-  titleX = TRUE,titleY = TRUE,nrows = 2,margin = 0.07
+  titleX = TRUE,titleY = TRUE,nrows = 2,margin = 0.07 
 
-)%>% subplot(
+)%>% subplot( # create boxplots like this.
   subplot(add_boxplot(base, x="h3k4me1", y = ~h3k4me1, type = "violin"),
     add_boxplot(base, x="h3k4me3",y = ~h3k4me1, type = "violin"),
     add_boxplot(base, x="h3k9me3",y = ~h3k9me3, type = "violin"),
